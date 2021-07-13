@@ -45,7 +45,32 @@ client.on('message',(message) =>{
           console.log(err);
           message.channel.send('An error occured. Either I do not have permissions or the user was not found');
         }
-      } 
+      } else if (CMD_NAME === 'role') {
+        if(args.length === 0) {
+          return message.channel.send({ embed: {
+            color: 7209215,
+            title: "Available Roles: ",
+            description: "These role i can charm you with!!😉 \n ```arm\nOrange\n```@toxic\n @kingslayer \n@dj",
+          }
+        })
+        }
+        var role = args[0]
+        const member = message.guild.members.cache.get(ag);
+
+        switch(role){
+          case 'TOXIC':
+            message.guild.members.cache.get(message.author.id).roles.add('834059351064707134');
+            break;
+          case 'DJ':
+            message.guild.members.cache.get(message.author.id).roles.add('831067138558787614');
+            break;
+          case 'KINGSLAYER':
+            message.guild.members.cache.get(message.author.id).roles.add('834062172534341643');
+            break;
+          default:
+            message.channel.send('Please chose the role from: \n@TOXIC \n@KINGSLAYER \n@DJ');
+        }
+      }
     }
 });
     /*  else if(CMD_NAME === "unban"){
