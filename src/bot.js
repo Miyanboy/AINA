@@ -37,3 +37,13 @@ client.on('message',(message) =>{
     } 
     }
 });
+    /*  else if(CMD_NAME === "unban"){
+        let member = client.user.fetch(unbanned.ag);
+
+        if (member == null) {
+          message.reply('Cannot find a ban for the given user.');
+          return;
+        }
+        message.guild.members.unban(member, 'Unbanned by ' + message.author.tag).then(user => {
+          message.channel.send('Unbanned <@' + ag + '>.');
+        }).catch(() => console.error);}*/
