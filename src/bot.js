@@ -50,7 +50,7 @@ client.on('message',(message) =>{
           return message.channel.send({ embed: {
             color: 7209215,
             title: "Available Roles: ",
-            description: "These role i can charm you with!!😉 \n ```arm\nOrange\n```@toxic\n @kingslayer \n@dj",
+            description: "These role i can charm you with!!😉 \n@toxic\n @kingslayer \n@dj",
           }
         })
         }
