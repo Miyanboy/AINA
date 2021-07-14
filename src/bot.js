@@ -78,6 +78,9 @@ client.on('message',(message) =>{
         }
       }
     
+      else if (CMD_NAME === 'ping') {
+        message.reply("Pong!!!");
+    }
     
     else if (CMD_NAME === 'help') {
           message.channel.send({ embed: {
