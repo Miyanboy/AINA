@@ -34,7 +34,8 @@ client.on('message',(message) =>{
         } else {
          return message.channel.send('That member was not found');
       }
-    } else if (CMD_NAME === 'ban') {
+    } 
+    else if (CMD_NAME === 'ban') {
         if (!message.member.hasPermission('BAN_MEMBERS'))
           return message.reply("You do not have permissions to use that command");
         if (args.length === 0) return message.reply("Please provide an ID");
@@ -45,35 +46,56 @@ client.on('message',(message) =>{
           console.log(err);
           message.channel.send('An error occured. Either I do not have permissions or the user was not found');
         }
-      } else if (CMD_NAME === 'role') {
+      }
+    else if (CMD_NAME === 'role') {
         if(args.length === 0) {
           return message.channel.send({ embed: {
             color: 7209215,
             title: "Available Roles: ",
-            description: "These role i can charm you with!!😉 \n@toxic\n @kingslayer \n@dj",
+            description: "These role i can charm you with!!😉 \n use aina@role <rolename>\n\n \n@toxic\n @kingslayer \n@dj",
           }
         })
         }
         var role = args[0]
         const member = message.guild.members.cache.get(ag);
-
         switch(role){
-          case 'TOXIC':
+          case 'toxic':
             message.guild.members.cache.get(message.author.id).roles.add('834059351064707134');
             break;
-          case 'DJ':
+          case 'dj':
             message.guild.members.cache.get(message.author.id).roles.add('831067138558787614');
             break;
-          case 'KINGSLAYER':
+          case 'kingslayer':
             message.guild.members.cache.get(message.author.id).roles.add('834062172534341643');
             break;
           default:
-            message.channel.send('Please chose the role from: \n@TOXIC \n@KINGSLAYER \n@DJ');
+            message.channel.send({ embed: {
+              color: 7209215,
+              title: "Available Roles: ",
+              description: "These role i can charm you with!!😉 \n@toxic\n @kingslayer \n@dj",
+            }}
+            );
         }
       }
-    }
-});
-    /*  else if(CMD_NAME === "unban"){
+    
+    
+    else if (CMD_NAME === 'help') {
+          message.channel.send({ embed: {
+            color: 7209215,
+            title: "Available Commands: ",
+            description: "These are my available spells. You can cast them with the aina@ prefix, like you did with this spell.",
+            fields: [
+              {
+                name: 'Enhactments',
+                value: '``help`` , ``role``, ``ping`` ',
+              },
+            ] 
+          }
+        });
+      }
+  }
+})
+      /*else if(CMD_NAME === "unban"){
         let member = client.user.fetch(unbanned.ag);
 
         if (member == null) {
