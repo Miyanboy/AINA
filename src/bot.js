@@ -73,6 +73,7 @@ client.on('message',(message) =>{
               color: 7209215,
               title: "Available Roles: ",
               description: "These role i can charm you with!!😉 \n@toxic\n @kingslayer \n@dj",
+
             }}
             );
         }
@@ -91,8 +92,8 @@ client.on('message',(message) =>{
               {
                 name: 'Enhactments',
                 value: '``help`` , ``role``, ``ping`` ',
-              },
-            ] 
+              }],
+            timestamp: new Date()
           }
         });
       }
