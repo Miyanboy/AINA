@@ -1,12 +1,15 @@
 require('dotenv').config();
 
-const{ Client } = require('discord.js');
+const{ Client } = require('discord.js'); 
 const client = new Client();
 const PREFIX = 'aina@' 
 
 client.login(process.env.DISCORDJS_BOT_TOKEN);
 
 client.on('message',(message) =>{
+    if(message.content === 'aina@Hello') message.reply('Hi! Who are u?');
+    if(message.content === 'aina@Hi') message.reply('Hi! Hottie🤩');
+    if(message.content === 'aina@Hey') message.reply('Howdy! U look ravishing today😗');
     if(message.author.bot) return;
     if(message.content.startsWith(PREFIX)){
         const [CMD_NAME, ...args] = message.content
@@ -35,6 +38,7 @@ client.on('message',(message) =>{
          return message.channel.send('That member was not found');
       }
     } 
+
     else if (CMD_NAME === 'ban') {
         if (!message.member.hasPermission('BAN_MEMBERS'))
           return message.reply("You do not have permissions to use that command");
@@ -73,13 +77,13 @@ client.on('message',(message) =>{
               color: 7209215,
               title: "Available Roles: ",
               description: "These role i can charm you with!!😉 \n@toxic\n @kingslayer \n@dj",
-
+              timestamp: new Date()
             }}
             );
         }
       }
     
-      else if (CMD_NAME === 'ping') {
+    else if (CMD_NAME === 'ping') {
         message.reply("Pong!!!");
     }
     
@@ -97,15 +101,19 @@ client.on('message',(message) =>{
           }
         });
       }
+      else if (CMD_NAME === 'leaderboard') {
+        message.channel.send({ embed: {
+          color: 7209215,
+          title: "Aina leaderboard ",
+          description: "Top ten members",
+          fields: [
+            {
+              name: 'leaderboard',
+              value: '',
+            }],
+          timestamp: new Date()
+        }
+      });
+    }
   }
 })
-      /*else if(CMD_NAME === "unban"){
-        let member = client.user.fetch(unbanned.ag);
-
-        if (member == null) {
-          message.reply('Cannot find a ban for the given user.');
-          return;
-        }
-        message.guild.members.unban(member, 'Unbanned by ' + message.author.tag).then(user => {
-          message.channel.send('Unbanned <@' + ag + '>.');
-        }).catch(() => console.error);}*/
