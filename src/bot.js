@@ -131,5 +131,13 @@ client.on('message',(message) =>{
         }
       });
     }
+    else if (CMD_NAME === 'joke') {
+      message.channel.send({ embed: {
+        color: 4871151,
+        description: jokes[Math.floor(Math.random() * jokes.length)],
+        timestamp: new Date()
+      }
+    });
   }
+    }
 })
