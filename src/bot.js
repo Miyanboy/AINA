@@ -22,10 +22,6 @@ const jokes = [
 
 client.login(process.env.DISCORDJS_BOT_TOKEN);
 
-client.on("ready", () => {
-  console.log(`Hello! I am Alive!`)
-})
-
 client.on('message',(message) =>{
     if(message.content === 'aina@Hello') message.reply('Hi! Who are u?');
     if(message.content === 'aina@Hi') message.reply('Hi! Hottie🤩');

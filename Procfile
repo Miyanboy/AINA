@@ -1,1 +1,2 @@
-worker : node ./src/bot.js
+worker : node src/bot.js
+web : npm dev
