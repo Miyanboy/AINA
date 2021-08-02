@@ -1,9 +1,16 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const{ Client } = require('discord.js'); 
-const client = new Client();
 const Levels = require('discord-xp');
+const ytdl = require('ytdl-core');
+const ytSearch=require('yt-search');
+const ffmpeg = require('ffmpeg-static');
+
+const queue = new Map();
+
 const PREFIX = 'aina@' 
+const client = new Client();
+
 Levels.setURL(process.env.mongoPath);
 
 const jokes = [
@@ -23,13 +30,18 @@ client.on('message',async (message) =>{
     if(message.content === 'aina@hey' || message.content === 'aina@Hey') message.reply('Howdy! U look ravishing today😗');
     if(message.author.bot) return;
 
+// Leveling System
     const randomXp = Math.floor(Math.random() * 100) + 10;
     const hasLevelUp = await Levels.appendXp(message.author.id, message.guild.id, randomXp)
+    
+// Music System    
+    const serve_queue = queue.get(message.guild.id);
+    const voice_channel = message.member.voice.channel;
 
     if(hasLevelUp){
       const user = await Levels.fetch(message.author.id,message.guild.id);
       message.channel.send(`You have leveled up to ${user.level}`);
-    /*  const lvl = `${user.level}`
+      const lvl = `${user.level}`
       switch(lvl){
           case '1':
             message.guild.members.cache.get(message.author.id).roles.add('834061620854259763');
@@ -47,7 +59,7 @@ client.on('message',async (message) =>{
             message.guild.members.cache.get(message.author.id).roles.add('786612725378711572');
             message.channel.send(`You are now @Acolyte`);
             break;
-            }*/
+            }
     }
 
     if(message.content.startsWith(PREFIX)){
@@ -162,7 +174,7 @@ client.on('message',async (message) =>{
     });
     }
    }
-/*   else if (CMD_NAME === 'leaderboard') {
+   else if (CMD_NAME === 'leaderboard') {
      const rawLeaderboard = await Levels.fetchLeaderboard(message.guild.id,10);
      
      if (rawLeaderboard.length < 1)
@@ -177,7 +189,94 @@ client.on('message',async (message) =>{
      }
      });
     }
-   }*/
+   } else if(CMD_NAME==='skip'){
+      if(!message.member.voice.channel) return message.channel.send('Join the voice channel');
+      if(!serve_queue){
+        message.channel.send('No song in the queue!');
+      }
+      serve_queue.connection.dispatcher.end();
+   }
+   else if(CMD_NAME==='stop'){
+       if(!message.member.voice.channel) return message.channel.send('Join the voice channel');
+        serve_queue.songs=[];
+        serve_queue.connection.dispatcher.end();
+   }
+   else if(CMD_NAME==='play'){
+      if(!args.length) return message.channel.send("Please Provide the link");
+      let song={};
+
+      if(ytdl.validateURL(args[0])){
+        const song_info = await ytdl.getInfo(args[0]);
+        song = {title: song_info.videoDetails.title, url: song_info.videoDetails.video_url }
+      }
+      else{
+        const video_finder = async (query) => {
+          const videoResult = await ytSearch(query);
+          return(videoResult.videos.length > 1) ? videoResult.videos: null;
+        }
+        const video = video_finder(args.join(' '));
+        if(video){
+          song = { title:video.title, url: video.url }
+        } else{
+          message.channel.send('Err! Not found');
+        }
+      }
+
+     if(!serve_queue){
+      const queue_constructor = {
+        voice_channel: voice_channel,
+        text_channel: message.channel,
+        connection: null,
+        songs: []
+      }
+      queue.set(message.guild.id, queue_constructor)
+      queue_constructor.songs.push(song);
+
+      try{
+        const connection = await voice_channel.join();
+        queue_constructor.connection = connection;
+        video_player(message.guild,queue_constructor.songs[0]);
+      }
+      catch(err){
+        queue.delete(message.guild.id);
+        message.channel.send("Not able to connect");
+        throw err;
+      }
+    } else{
+      serve_queue.songs.push(song);
+      return message.channel.send(`**${song.title}** added to the queue`);
+    }
+  }
   }
 })
+
+
+const video_player = async (guild, song) => {
+const song_queue = queue.get (guild.id) ;
+if (!song) {
+  song_queue.voice_channel.leave();
+  queue.delete(guild.id) ;
+  return;
+  }
+const stream = ytdl(song.url,{ filter: 'audioonly' });
+song_queue.connection.play(stream, { seek: 0, volume: 0.5 })
+.on('finish',() => {
+  song_queue.songs.shift();
+  video_player(guild, song_queue.songs[0]);
+});
+await song_queue.text_channel.send(`Now playing **${song.title}**`);
+}
+const skip_song = (message,serve_queue) => {
+  if(!message.member.voice.channel) return message.channel.send('Join the voice channel');
+  if(!serve_queue){
+    message.channel.send('No song in the queue!');
+  }
+  serve_queue.connection.dispatcher.end();
+}
+
+const stop_song = (message,serve_queue) => {
+  if(!message.member.voice.channel) return message.channel.send('Join the voice channel');
+  serve_queue.songs=[];
+  serve_queue.connection.dispatcher.end();
+}
 const keep_alive = require('./keep_alive.js');
